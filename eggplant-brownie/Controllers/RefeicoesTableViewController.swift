@@ -2,7 +2,7 @@
 //  RefeicoesTableViewController.swift
 //  eggplant-brownie
 //
-//  Created by Gabriel Petrovick on 07/11/20.
+//  Created by Fabiana Petrovick on 07/11/20.
 //  Copyright © 2020 Fabiana Petrovick. All rights reserved.
 //
 

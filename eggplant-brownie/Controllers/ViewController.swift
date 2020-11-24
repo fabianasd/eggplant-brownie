@@ -47,8 +47,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func add(_ item: Item) {
         itens.append(item)
-        itensTableView.reloadData()
-        
+       // itensTableView?.reloadData() //equivale ao if abaixo, porem aqui tem msg de validacao
+        if let tableView = itensTableView {
+            tableView.reloadData()
+        } else {
+            Alerta(controller: self).exibe(titulo: "Desculpe", mensagem: "Erro ao atualizar tabela")
+        }
     }
 
     //MARK: - UITableViewDataSource
@@ -95,41 +99,52 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
     }
     
+    func recuperaRefeicaoDoFormulario() -> Refeicao? {
+        // if let permite usar a celula apenas aqui dentro e o guard let pode ser acessado em qualquer lugar
+
+        //        if let nomeDaRefeicao = nomeTextField?.text,let felicidadeDaRefeicao =
+        //            felicidadeTextField?.text {
+        //            let nome = nomeDaRefeicao
+        //            if let felicidade = Int(felicidadeDaRefeicao){
+        //            let refeicao = Refeicao(nome: nome, felicidade: felicidade)
+        //
+        //            print("comi \(refeicao.nome) e fiquei com felicidade: \(refeicao.felicidade)")
+        //        } else {
+        //            print("erro ao tentar criar a refeicao")
+        //            }
+        //        }
+
+        //outra sugestão
+                //ler as informacoes do campo de texto
+                guard let nomeDaRefeicao = nomeTextField?.text else {
+                    return nil
+                }
+                //le as informacoes do campo de texto
+                guard let felicidadeDaRefeicao = felicidadeTextField?.text, let
+                    felicidade = Int(felicidadeDaRefeicao) else {
+                        return nil
+                }
+                //criar o objeto refeicao
+                //exemplo de metodo construtor: Refeicao(nome: nomeDaRefeicao, felicidade: felicidade)
+                let refeicao = Refeicao(nome: nomeDaRefeicao, felicidade: felicidade, itens: itensSelecionados)
+        
+        return refeicao
+                
+        // print("comi \(refeicao.nome) e fiquei com felicidade: \(refeicao.felicidade)")
+                
+    }
+    
     //MARK: - IBActions
     
     @IBAction func adicionar(_ sender: Any) {
-// if let permite usar a celula apenas aqui dentro e o guard let pode ser acessado em qualquer lugar
-
-//        if let nomeDaRefeicao = nomeTextField?.text,let felicidadeDaRefeicao =
-//            felicidadeTextField?.text {
-//            let nome = nomeDaRefeicao
-//            if let felicidade = Int(felicidadeDaRefeicao){
-//            let refeicao = Refeicao(nome: nome, felicidade: felicidade)
-//
-//            print("comi \(refeicao.nome) e fiquei com felicidade: \(refeicao.felicidade)")
-//        } else {
-//            print("erro ao tentar criar a refeicao")
-//            }
-//        }
-
-        
-//outra sugestão
-        
-        guard let nomeDaRefeicao = nomeTextField?.text else {
-            return
-        }
-        
-        guard let felicidadeDaRefeicao = felicidadeTextField?.text, let
-            felicidade = Int(felicidadeDaRefeicao) else { return }
-        //exemplo de metodo construtor Refeicao(nome: nomeDaRefeicao, felicidade: felicidade)
-        let refeicao = Refeicao(nome: nomeDaRefeicao, felicidade: felicidade, itens: itensSelecionados)
-        
-        
-// print("comi \(refeicao.nome) e fiquei com felicidade: \(refeicao.felicidade)")
-        
+     //   guard let refeicao = recuperaRefeicaoDoFormulario() else { return } ou if let...
+        if let refeicao = recuperaRefeicaoDoFormulario() {
     //manipulando a tabela
-        delegate?.add(refeicao)
-        navigationController?.popViewController(animated: true)
+            delegate?.add(refeicao) //adiciona
+            navigationController?.popViewController(animated: true) //navega
+        } else {
+        Alerta(controller: self).exibe(mensagem: "Erro ao ler dados do formulário")
+        }
     }
 }
 

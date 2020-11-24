@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  eggplant-brownie
 //
-//  Created by Gabriel Petrovick on 31/10/20.
+//  Created by Fabiana Petrovick on 31/10/20.
 //  Copyright © 2020 Fabiana Petrovick. All rights reserved.
 //
 
