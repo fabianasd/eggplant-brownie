@@ -10,10 +10,13 @@ import UIKit
 //Manipulando a tabela
 class RefeicoesTableViewController: UITableViewController, AdicionaRefeicaoDelegate {
     
-    var refeicoes = [Refeicao(nome: "Macarrão", felicidade: 4),
-                     Refeicao(nome: "Pizza", felicidade: 4),
-                     Refeicao(nome: "Comida Japonesa", felicidade: 5)]
-        
+    var refeicoes: [Refeicao] = []
+    
+    //salva os dados cadastrados
+    override func viewDidLoad() {
+        refeicoes = RefeicaoDao().recupera()
+    }
+    
     //manipula as linhas
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return refeicoes.count
@@ -36,17 +39,7 @@ class RefeicoesTableViewController: UITableViewController, AdicionaRefeicaoDeleg
     func add(_ refeicao: Refeicao) {
         refeicoes.append(refeicao)
         tableView.reloadData()
-
-        guard let diretorio = FileManager.default.urls(for: .documentDirectory, in:
-            .userDomainMask).first else { return }
-        let caminho = diretorio.appendingPathComponent("refeicao")
-        
-        do {
-            let dados = try NSKeyedArchiver.archivedData(withRootObject: refeicoes, requiringSecureCoding: false)
-            try dados.write(to: caminho)
-        } catch {
-            print(error.localizedDescription)
-        }
+        RefeicaoDao().save(refeicoes)
     }
     //pegar o gesto de toque de dedo
     @objc func mostrarDetalhes(_ gesture: UILongPressGestureRecognizer) {
@@ -54,7 +47,7 @@ class RefeicoesTableViewController: UITableViewController, AdicionaRefeicaoDeleg
             let celula = gesture.view as! UITableViewCell
             guard let indexPath = tableView.indexPath(for: celula) else { return }
             let refeicao = refeicoes[indexPath.row]
-         
+            
             //exemplo de closure
             RemoveRefeicaoViewController(controller: self).exibe(refeicao, handler: {
                 alert in
@@ -63,14 +56,14 @@ class RefeicoesTableViewController: UITableViewController, AdicionaRefeicaoDeleg
             })
         }
     }
-  
-   //navega entre as telas
+    
+    //navega entre as telas
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         //para trabalhar com varias telas aconcelha-se usar o identifier
         if segue.identifier == "adicionar" {
-        
-        if let viewController = segue.destination as? ViewController {
-            viewController.delegate = self
+            
+            if let viewController = segue.destination as? ViewController {
+                viewController.delegate = self
             }
         }
     }

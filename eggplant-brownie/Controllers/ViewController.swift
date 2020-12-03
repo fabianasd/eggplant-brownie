@@ -15,17 +15,19 @@ protocol AdicionaRefeicaoDelegate {
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, AdicionaItensDelegate {
     
     //MARK: - IBOutlet
-         
+    
     @IBOutlet weak var itensTableView: UITableView!
     
     //MARK: - Atributos
     
     var delegate: AdicionaRefeicaoDelegate?
-  //  var itens: [String] = ["Molho de tomate" , "Queijo", "Molho apimentado", "Mangericão"]
-    var itens = [Item(nome:"Molho de Tomate", calorias: 40.0),
-                 Item(nome:"Queijo", calorias: 40.0),
-                 Item(nome:"Molho apimentado", calorias: 40.0),
-                 Item(nome:"Mangericão", calorias: 40.0)]
+    //  var itens: [String] = ["Molho de tomate" , "Queijo", "Molho apimentado", "Mangericão"]
+    //    var itens = [Item(nome:"Molho de Tomate", calorias: 40.0),
+    //                 Item(nome:"Queijo", calorias: 40.0),
+    //                 Item(nome:"Molho apimentado", calorias: 40.0),
+    //                 Item(nome:"Mangericão", calorias: 40.0)]
+    //foi substituido pela linha abaixo
+    var itens: [Item ] = []
     var itensSelecionados: [Item] = []
     
     //MARK: - IBOutlets
@@ -38,8 +40,11 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     override func viewDidLoad() {
         let botaoAdicionaItem = UIBarButtonItem(title: "Adicionar", style: .plain, target: self, action: #selector(adicionarItem))
         navigationItem.rightBarButtonItem = botaoAdicionaItem
+        recuperaItens()
     }
-    
+    func recuperaItens() {
+        itens = ItemDao().recupera()
+    }
     @objc func adicionarItem() {
         let adicionarItensviewController = AdicionarItensViewController(delegate: self)
         navigationController?.pushViewController(adicionarItensviewController, animated: true)
@@ -47,21 +52,22 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func add(_ item: Item) {
         itens.append(item)
-       // itensTableView?.reloadData() //equivale ao if abaixo, porem aqui tem msg de validacao
+        ItemDao().save(itens)
+        // itensTableView?.reloadData() //equivale ao if abaixo, porem aqui tem msg de validacao
         if let tableView = itensTableView {
             tableView.reloadData()
         } else {
             Alerta(controller: self).exibe(titulo: "Desculpe", mensagem: "Erro ao atualizar tabela")
         }
     }
-
+    
     //MARK: - UITableViewDataSource
     //DataSource e Delegate tem que selecionar no Main a conexão
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return itens.count
-      }
-      
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let celula = UITableViewCell(style: .default, reuseIdentifier: nil)
         
@@ -71,7 +77,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         celula.textLabel?.text = item.nome
         
         return celula
-      }
+    }
     
     //MARK: - UITableViewDelegate
     //DataSource e Delegate tem que selecionar no Main a conexão
@@ -101,7 +107,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func recuperaRefeicaoDoFormulario() -> Refeicao? {
         // if let permite usar a celula apenas aqui dentro e o guard let pode ser acessado em qualquer lugar
-
+        
         //        if let nomeDaRefeicao = nomeTextField?.text,let felicidadeDaRefeicao =
         //            felicidadeTextField?.text {
         //            let nome = nomeDaRefeicao
@@ -113,37 +119,37 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         //            print("erro ao tentar criar a refeicao")
         //            }
         //        }
-
+        
         //outra sugestão
-                //ler as informacoes do campo de texto
-                guard let nomeDaRefeicao = nomeTextField?.text else {
-                    return nil
-                }
-                //le as informacoes do campo de texto
-                guard let felicidadeDaRefeicao = felicidadeTextField?.text, let
-                    felicidade = Int(felicidadeDaRefeicao) else {
-                        return nil
-                }
-                //criar o objeto refeicao
-                //exemplo de metodo construtor: Refeicao(nome: nomeDaRefeicao, felicidade: felicidade)
-                let refeicao = Refeicao(nome: nomeDaRefeicao, felicidade: felicidade, itens: itensSelecionados)
+        //ler as informacoes do campo de texto
+        guard let nomeDaRefeicao = nomeTextField?.text else {
+            return nil
+        }
+        //le as informacoes do campo de texto
+        guard let felicidadeDaRefeicao = felicidadeTextField?.text, let
+            felicidade = Int(felicidadeDaRefeicao) else {
+                return nil
+        }
+        //criar o objeto refeicao
+        //exemplo de metodo construtor: Refeicao(nome: nomeDaRefeicao, felicidade: felicidade)
+        let refeicao = Refeicao(nome: nomeDaRefeicao, felicidade: felicidade, itens: itensSelecionados)
         
         return refeicao
-                
+        
         // print("comi \(refeicao.nome) e fiquei com felicidade: \(refeicao.felicidade)")
-                
+        
     }
     
     //MARK: - IBActions
     
     @IBAction func adicionar(_ sender: Any) {
-     //   guard let refeicao = recuperaRefeicaoDoFormulario() else { return } ou if let...
+        //   guard let refeicao = recuperaRefeicaoDoFormulario() else { return } ou if let...
         if let refeicao = recuperaRefeicaoDoFormulario() {
-    //manipulando a tabela
+            //manipulando a tabela
             delegate?.add(refeicao) //adiciona
             navigationController?.popViewController(animated: true) //navega
         } else {
-        Alerta(controller: self).exibe(mensagem: "Erro ao ler dados do formulário")
+            Alerta(controller: self).exibe(mensagem: "Erro ao ler dados do formulário")
         }
     }
 }

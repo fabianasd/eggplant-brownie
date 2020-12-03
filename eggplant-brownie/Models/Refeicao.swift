@@ -12,19 +12,19 @@ class Refeicao: NSObject, NSCoding {
     
     // Mark: - Atributos
     
-        let nome: String
-        let felicidade: Int
-        var itens: Array<Item> = []
-
-    // Mark: - Init
-
-    init(nome: String, felicidade: Int, itens: [Item] = []) {
-            self.nome = nome
-            self.felicidade = felicidade
-            self.itens = itens
-        }
+    let nome: String
+    let felicidade: Int
+    var itens: Array<Item> = []
     
-    // Mark: - NSCoding
+    // Mark: - Init
+    
+    init(nome: String, felicidade: Int, itens: [Item] = []) {
+        self.nome = nome
+        self.felicidade = felicidade
+        self.itens = itens
+    }
+    
+    // Mark: - NSCoding (serializar e desserializar)
     func encode(with aCoder: NSCoder) {
         aCoder.encode(nome, forKey: "nome")
         aCoder.encode(felicidade, forKey: "felicidade")
@@ -38,14 +38,14 @@ class Refeicao: NSObject, NSCoding {
     }
     
     // Mark: - Metodos
-        
+    
     func totalDeCalorias() -> Double {
-            var total = 0.0
-            
-            for item in itens {
-                total += item.calorias
-            }
-            return total
+        var total = 0.0
+        
+        for item in itens {
+            total += item.calorias
+        }
+        return total
     }
     
     func detalhes() -> String {
